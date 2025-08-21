@@ -54,3 +54,12 @@ if p_value < 0.05:
         print("Statistically significant difference in body mass between age classes.")
 else:
         print("No statistically significant difference in body mass between age classes.")
+
+# Perform Tukey's HSD
+
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+tukey = pairwise_tukeyhsd(endog=df['Mass'],
+                          groups=df['Class'],
+                          alpha=0.05)
+print(tukey)
