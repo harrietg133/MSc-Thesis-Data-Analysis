@@ -1,6 +1,6 @@
 pip install scipy 
 
-# Performing Shapiro-Wilk Test
+# Perform Shapiro-Wilk Test
 
 import pandas as pd
 from scipy.stats import shapiro
