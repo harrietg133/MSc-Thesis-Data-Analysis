@@ -1,6 +1,6 @@
 pip install scipy
 
-# Performing Shapiro-Wilk Test
+# Perform Shapiro-Wilk Test
 
 import pandas as pd
 from scipy.stats import shapiro
@@ -23,7 +23,7 @@ for group, data in df.groupby("Status"):
     stat, p = shapiro(data["Mass"].dropna())
     print(f"{group} - Shapiro-Wilk p = {p:.4f} ({'normal' if p >= 0.05 else 'not normal'})")
 
-# Performing Mann-Whitney U Test
+# Perform Mann-Whitney U Test
 
 from scipy.stats import mannwhitneyu
 
