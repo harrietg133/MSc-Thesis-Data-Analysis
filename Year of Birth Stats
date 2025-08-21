@@ -1,0 +1,56 @@
+pip install scipy
+
+# Performing Shapiro-Wilk Test
+
+import pandas as pd
+from scipy.stats import shapiro
+
+df = pd.read_csv("YOB_Data.csv")
+df = df.dropna(subset=["Mass"])
+
+body_volume = df["Mass"]
+
+stat, p = shapiro(body_volume)
+
+print(f"Shapiro-Wilk Test Statistic: {stat:.4f}")
+print(f"P-value: {p:.4f}")
+
+if p < 0.05:
+    print("The data is likely NOT normally distributed.")
+else:
+    print("The data is likely normally distributed.")
+
+for group, data in df.groupby("YOB"):
+    stat, p = shapiro(data["Mass"].dropna())
+    print(f"{group} - Shapiro-Wilk p = {p:.4f} ({'normal' if p >= 0.05 else 'not normal'})")
+
+# Perform Individual T-Test
+
+from scipy.stats import ttest_ind
+import numpy as np
+
+preg = df[df["YOB"] == 2017]["Mass"].dropna()
+nonpreg = df[df["YOB"] == 2018]["Mass"].dropna()
+
+if len(preg) > 0 and len(nonpreg) > 0:
+    t_stat, p_value = ttest_ind(preg, nonpreg, equal_var=False, alternative='two-sided')
+    
+    n1, n2 = len(preg), len(nonpreg)
+    s1, s2 = np.var(preg, ddof=1), np.var(nonpreg, ddof=1)  # sample variances
+    
+    df_num = (s1/n1 + s2/n2)**2
+    df_den = ((s1/n1)**2 / (n1 - 1)) + ((s2/n2)**2 / (n2 - 1))
+    df_welch = df_num / df_den
+    
+    print(f"T-statistic: {t_stat:.4f}")
+    print(f"P-value: {p_value:.4f}")
+    print(f"Degrees of freedom (Welch): {df_welch:.2f}")
+    
+    if p_value < 0.05:
+        print("Statistically significant difference in body mass between pregnant and non-pregnant.")
+    else:
+        print("No statistically significant difference in body mass between early and late pregnancy.")
+else:
+    print(f"Cannot perform test: preg group has {len(preg)} samples, nonpreg group has {len(nonpreg)} samples")
+    print("Both groups must have at least one sample.")
+    print("Unique values in Status column:", df["Status"].unique())
