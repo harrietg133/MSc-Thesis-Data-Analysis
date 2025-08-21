@@ -1,0 +1,47 @@
+pip install scipy
+
+# Performing Shapiro-Wilk Test
+
+import pandas as pd
+from scipy.stats import shapiro
+
+df = pd.read_csv("Preg_Data.csv")
+df = df.dropna(subset=["Mass"])
+
+body_volume = df["Mass"]
+stat, p = shapiro(body_volume)
+
+print(f"Shapiro-Wilk Test Statistic: {stat:.4f}")
+print(f"P-value: {p:.4f}")
+
+if p < 0.05:
+    print("The data is likely NOT normally distributed.")
+else:
+    print("The data is likely normally distributed.")
+
+for group, data in df.groupby("Status"):
+    stat, p = shapiro(data["Mass"].dropna())
+    print(f"{group} - Shapiro-Wilk p = {p:.4f} ({'normal' if p >= 0.05 else 'not normal'})")
+
+# Performing Mann-Whitney U Test
+
+from scipy.stats import mannwhitneyu
+
+preg = df[df["Status"] == 1]["Mass"].dropna()
+nonpreg = df[df["Status"] == 2]["Mass"].dropna()
+
+if len(preg) > 0 and len(nonpreg) > 0:
+    u_stat, p_value = mannwhitneyu(preg, nonpreg, alternative='two-sided')
+    
+    print(f"Mann-Whitney U statistic: {u_stat:.4f}")
+    print(f"P-value: {p_value:.4f}")
+    
+    if p_value < 0.05:
+        print("Statistically significant difference in body mass between pregnant and non-pregnant.")
+    else:
+        print("No statistically significant difference in body mass between the groups.")
+else:
+    print(f"Cannot perform test: preg group has {len(preg)} samples, nonpreg group has {len(nonpreg)} samples")
+    print("Both groups must have at least one sample.")
+    
+    print("Unique values in Status column:", df["Status"].unique())
