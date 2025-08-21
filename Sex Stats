@@ -1,0 +1,114 @@
+pip install scipy
+
+# Perform Bartlett's Test
+
+import pandas as pd
+from scipy.stats import bartlett
+
+df = pd.read_csv("Sex_Data.csv")
+df = df.dropna(subset=["Sex", "Mass"])
+
+grouped_data = df.groupby("Sex")["Mass"].apply(list)
+
+if len(grouped_data) >= 2:
+    stat, p_value = bartlett(*grouped_data)
+
+    print(f"Bartlett’s test statistic: {stat:.4f}")
+    print(f"P-value: {p_value:.4f}")
+
+    if p_value < 0.05:
+        print("Variances are significantly different (heterogeneous).")
+    else:
+        print("Variances are not significantly different (homogeneous).")
+else:
+    print("Not enough groups to perform Bartlett’s test.")
+
+#Perform One-Way Anova
+
+from scipy.stats import f_oneway
+
+df = pd.read_csv("Sex_Data.csv")
+
+grouped = df.groupby("Sex")["Mass"].apply(list)
+
+f_statistic, p_value = f_oneway(*grouped)
+
+summary_table = df.groupby("Sex")["Mass"].agg(
+    N='count',
+    Mean='mean',
+    StdDev='std',
+    Min='min',
+    Max='max'
+).reset_index()
+
+k = len(grouped)
+N = df["Mass"].count()
+df_between = k - 1
+df_within = N - k
+
+print(summary_table)
+
+print(f"F-statistic: {f_statistic:.4f}")
+print(f"P-value: {p_value:.4f}")
+print(f"Degrees of freedom: {df_between}, {df_within}")
+
+if p_value < 0.05:
+        print("Statistically significant difference in body mass between sexes.")
+else:
+        print("No statistically significant difference in body mass between sexes.")
+
+# Detailed sex data analysis
+# Perform Shapiro-Wilk Test
+
+from scipy.stats import shapiro
+
+df = pd.read_csv("DetailedSex_Data.csv")
+df = df.dropna(subset=["Mass"])
+
+body_mass = df["Mass"]
+
+stat, p = shapiro(body_mass)
+
+print(f"Shapiro-Wilk Test Statistic: {stat:.4f}")
+print(f"P-value: {p:.4f}")
+
+if p < 0.05:
+    print("The data is likely NOT normally distributed.")
+else:
+    print("The data is likely normally distributed.")
+
+for group, data in df.groupby("Sex"):
+    stat, p = shapiro(data["Mass"].dropna())
+    print(f"{group} - Shapiro-Wilk p = {p:.4f} ({'normal' if p >= 0.05 else 'not normal'})")
+
+# Perform Individual T-Test
+
+from scipy.stats import ttest_ind
+import numpy as np
+
+male = df[df["Sex"] == 1]["Mass"].dropna()
+female = df[df["Sex"] == 2]["Mass"].dropna()
+
+if len(male) > 0 and len(female) > 0:
+    t_stat, p_value = ttest_ind(male, female, equal_var=False, alternative='two-sided')
+    
+    n1, n2 = len(male), len(female)
+    s1, s2 = np.var(male, ddof=1), np.var(female, ddof=1)
+    
+    df_num = (s1/n1 + s2/n2)**2
+    df_den = ((s1/n1)**2 / (n1 - 1)) + ((s2/n2)**2 / (n2 - 1))
+    df_welch = df_num / df_den
+    
+    print(f"T-statistic: {t_stat:.4f}")
+    print(f"P-value: {p_value:.4f}")
+    print(f"Degrees of freedom (Welch): {df_welch:.2f}")
+    
+    if p_value < 0.05:
+        print("Statistically significant difference in body mass between male and female.")
+    else:
+        print("No statistically significant difference in body mass between male and female.")
+else:
+    print(f"Cannot perform test: male group has {len(male)} samples, female group has {len(female)} samples")
+    print("Both groups must have at least one sample.")
+    
+    print("Unique values in Status column:", df["Status"].unique())
