@@ -1,0 +1,56 @@
+pip install scipy
+
+# Performing Bartlett's Test
+
+import pandas as pd
+from scipy.stats import bartlett
+
+df = pd.read_csv("Age_Data.csv")
+df = df.dropna(subset=["Class", "Mass"])
+
+grouped_data = df.groupby("Class")["Mass"].apply(list)
+
+if len(grouped_data) >= 2:
+    stat, p_value = bartlett(*grouped_data)
+
+    print(f"Bartlett’s test statistic: {stat:.4f}")
+    print(f"P-value: {p_value:.4f}")
+
+    if p_value < 0.05:
+        print("Variances are significantly different (heterogeneous).")
+    else:
+        print("Variances are not significantly different (homogeneous).")
+else:
+    print("Not enough groups to perform Bartlett’s test.")
+
+# Performing One-Way ANOVA
+
+from scipy.stats import f_oneway
+
+df = pd.read_csv("Age_Data.csv")
+grouped = df.groupby("Class")["Mass"].apply(list)
+f_statistic, p_value = f_oneway(*grouped)
+
+summary_table = df.groupby("Class")["Mass"].agg(
+    N='count',
+    Mean='mean',
+    StdDev='std',
+    Min='min',
+    Max='max'
+).reset_index()
+
+k = len(grouped)   
+N = df["Mass"].count() 
+df_between = k - 1
+df_within = N - k
+
+print(summary_table)
+
+print(f"F-statistic: {f_statistic:.4f}")
+print(f"P-value: {p_value:.4f}")
+print(f"Degrees of freedom: {df_between}, {df_within}")
+
+if p_value < 0.05:
+        print("Statistically significant difference in body mass between age classes.")
+else:
+        print("No statistically significant difference in body mass between age classes.")
