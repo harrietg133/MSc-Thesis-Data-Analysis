@@ -1,0 +1,67 @@
+# Calculate Volume
+
+import csv
+import math
+
+def frustum_volume(r1, r2, h):
+    """Calculate volume of a frustum (in cm³)."""
+    return (math.pi * h / 3) * (r1**2 + r1 * r2 + r2**2)
+
+individuals = []
+with open("AllLengthandWidth.csv", newline='') as f:
+    reader = csv.reader(f)
+    headers = next(reader)  # Skip header
+    for row in reader:
+        if not row or len(row) < 2:
+            continue
+        length = float(row[0])
+        widths = [float(w) for w in row[1:]]
+        individuals.append((length, widths.copy()))
+
+results = []
+for idx, (length, widths) in enumerate(individuals, start=1):
+    n = len(widths)
+    dx = length / (n - 1)
+    radii = [w / 2 for w in widths]
+    total_volume = 0.0
+    for i in range(n - 1):
+        total_volume += frustum_volume(radii[i], radii[i + 1], dx)
+    results.append((f"Individual {idx}", total_volume, widths))
+
+for name, volume, widths in results:
+    print(f"{name}: {volume:.2f} cm³")
+
+with open("body_volumes.csv", "w", newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(["Individual", "Volume (cm³)"])
+    for name, volume, _ in results:
+        writer.writerow([name, f"{volume:.2f}"])
+
+# Convert from cm3 to m3
+
+import csv
+
+def cm3_to_m3(volume_cm3):
+    return volume_cm3 / 1_000_000
+
+results = []
+
+with open('body_volumes.csv', 'r', newline='') as csvfile:
+    reader = csv.reader(csvfile)
+    headers = next(reader)
+    for i, row in enumerate(reader, start=1):
+        try:
+            volume_cm3 = float(row[1])
+            volume_m3 = cm3_to_m3(volume_cm3)
+            print(f"Individual {i}: {volume_m3:.2f} m³")
+            results.append([i, volume_cm3, volume_m3])
+        except (ValueError, IndexError):
+            print(f"Individual {i}: Invalid or missing data '{row}'")
+            results.append([i, row[1] if len(row) > 1 else '', 'Invalid'])
+
+with open('BodyVolumes.csv', 'w', newline='') as outfile:
+    writer = csv.writer(outfile)
+    writer.writerow(['Individual', 'Volume_cm3', 'Volume_m3'])  # Header
+    writer.writerows(results)
+
+print("Converted volumes saved to 'BodyVolumes.csv'")
