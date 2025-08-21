@@ -1,0 +1,16 @@
+# Calculate Mass Estimates
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+dolphin_density = 1025  # kg/m³
+
+df = pd.read_csv('BodyVolumes.csv')
+volume_column = 'Volume_m3'
+
+df['Mass_kg'] = dolphin_density * df[volume_column]
+
+print("Mass calculation results:")
+print(df.head())
+
+df.to_csv('mass_calculation_results.csv', index=False)
