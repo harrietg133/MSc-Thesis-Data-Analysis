@@ -1,6 +1,6 @@
 pip install scipy
 
-# Performing Bartlett's Test
+# Perform Bartlett's Test
 
 import pandas as pd
 from scipy.stats import bartlett
@@ -23,7 +23,7 @@ if len(grouped_data) >= 2:
 else:
     print("Not enough groups to perform Bartlett’s test.")
 
-# Performing One-Way ANOVA
+# Perform One-Way ANOVA
 
 from scipy.stats import f_oneway
 
