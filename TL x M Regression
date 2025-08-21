@@ -1,0 +1,32 @@
+# Calculate Regression
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import statsmodels.api as sm
+
+df = pd.read_csv("TLxMxV.csv")
+
+X = df["TL"]
+y = df["Mass"]
+X_const = sm.add_constant(X)
+model = sm.OLS(y, X_const).fit()
+
+print(model.summary())
+
+# Create Plot
+
+intercept, slope = model.params
+x_range = np.linspace(X.min(), X.max(), 100)
+y_pred_line = intercept + slope * x_range
+
+plt.figure(figsize=(8, 6))
+plt.scatter(X, y, color="slategray", label="Observed data")
+plt.plot(x_range, y_pred_line, color="lightgray", linewidth=2, label="Regression line")
+
+plt.xlabel("Total Length (TL)")
+plt.ylabel("Mass")
+plt.legend()
+plt.grid(False)
+plt.savefig("TLxM.png", dpi=300, bbox_inches="tight")
+plt.show()
