@@ -36,7 +36,7 @@ if len(preg) > 0 and len(nonpreg) > 0:
     t_stat, p_value = ttest_ind(preg, nonpreg, equal_var=False, alternative='two-sided')
     
     n1, n2 = len(preg), len(nonpreg)
-    s1, s2 = np.var(preg, ddof=1), np.var(nonpreg, ddof=1)  # sample variances
+    s1, s2 = np.var(preg, ddof=1), np.var(nonpreg, ddof=1)
     
     df_num = (s1/n1 + s2/n2)**2
     df_den = ((s1/n1)**2 / (n1 - 1)) + ((s2/n2)**2 / (n2 - 1))
