@@ -23,6 +23,41 @@ for group, data in df.groupby("Status"):
     stat, p = shapiro(data["Mass"].dropna())
     print(f"{group} - Shapiro-Wilk p = {p:.4f} ({'normal' if p >= 0.05 else 'not normal'})")
 
+# Test if normal after data transformations
+
+import numpy as np
+
+group1 = df[df["Status"] == 1]["Mass"].dropna()
+group2 = df[df["Status"] == 2]["Mass"].dropna()
+
+def is_normal(data, alpha=0.05):
+    stat, p = shapiro(data)
+    print(f"Shapiro-Wilk test p-value: {p:.4f}")
+    return p > alpha
+
+def transform_data(data):
+    log_data = np.log1p(data)
+    if is_normal(log_data):
+        print("Log transformation made data normal")
+        return log_data
+    sqrt_data = np.sqrt(data)
+    if is_normal(sqrt_data):
+        print("Square root transformation made data normal")
+        return sqrt_data
+
+    print("Data remains non-normal after transformations")
+    return data
+
+normal1 = is_normal(group1)
+if not normal1:
+    group1 = transform_data(group1)
+    normal1 = is_normal(group1)
+
+normal2 = is_normal(group2)
+if not normal2:
+    group2 = transform_data(group2)
+    normal2 = is_normal(group2)
+
 # Perform Mann-Whitney U Test
 
 from scipy.stats import mannwhitneyu
