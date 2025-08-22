@@ -10,16 +10,6 @@ df = df.dropna(subset=["Mass"])
 
 body_volume = df["Mass"]
 
-stat, p = shapiro(body_volume)
-
-print(f"Shapiro-Wilk Test Statistic: {stat:.4f}")
-print(f"P-value: {p:.4f}")
-
-if p < 0.05:
-    print("The data is likely NOT normally distributed.")
-else:
-    print("The data is likely normally distributed.")
-
 for group, data in df.groupby("YOB"):
     stat, p = shapiro(data["Mass"].dropna())
     print(f"{group} - Shapiro-Wilk p = {p:.4f} ({'normal' if p >= 0.05 else 'not normal'})")
