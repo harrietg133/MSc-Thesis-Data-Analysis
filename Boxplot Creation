@@ -1,0 +1,46 @@
+# Create boxplot for age class, pregnancy status and year of birth
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+df = pd.read_csv('Your_Data.csv') # Replaced with each data set
+
+ax = pd.plotting.boxplot(
+    df,
+    column=['Mass'],
+    by=['YourData'], # Replaced with each data set
+    grid=False,
+    figsize=(4, 5),
+    fontsize=10,
+    patch_artist=True,
+    showmeans=True,
+    meanline=True, 
+    widths=0.3,
+    meanprops=dict(color="red", linewidth=0.5),
+    medianprops=dict(color="black", linewidth=0.5),
+    boxprops=dict(color="black", linewidth=1),   
+    whiskerprops=dict(color="black", linewidth=1), 
+    capprops=dict(color="black", linewidth=1)
+)
+
+colors = ['lightgrey', 'lightgrey']
+for patch, color in zip(ax.patches, colors * 10): 
+    patch.set_facecolor(color)
+
+ax.set_xticklabels(["Label 1", "Label 2"]) # Replaced with each data set label, and more added when needed
+
+ax.tick_params(axis="x", which="major", direction="out", length=6, width=1, top=True, bottom=True)
+ax.tick_params(axis="y", which="major", direction="out", length=6, width=1, left=True, right=True)
+
+for spine in ax.spines.values():
+    spine.set_color('black')
+    spine.set_linewidth(1.5)
+
+plt.suptitle("") 
+plt.title("Mass Distribution")
+plt.xlabel("YourData") # Replaced with each data set label
+plt.ylabel("Mass (kg)")
+
+plt.savefig("data_boxplot.png", dpi=300, bbox_inches='tight')
+
+plt.show()
