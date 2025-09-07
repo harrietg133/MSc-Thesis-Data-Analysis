@@ -8,8 +8,8 @@ from scipy.stats import shapiro
 df = pd.read_csv("Preg_Data.csv")
 df = df.dropna(subset=["Mass"])
 
-body_volume = df["Mass"]
-stat, p = shapiro(body_volume)
+body_mass = df["Mass"]
+stat, p = shapiro(body_mass)
 
 print(f"Shapiro-Wilk Test Statistic: {stat:.4f}")
 print(f"P-value: {p:.4f}")
