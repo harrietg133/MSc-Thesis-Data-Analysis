@@ -37,7 +37,7 @@ if len(preg) > 0 and len(nonpreg) > 0:
     print(f"Degrees of freedom (Welch): {df_welch:.2f}")
     
     if p_value < 0.05:
-        print("Statistically significant difference in body mass between pregnant and non-pregnant.")
+        print("Statistically significant difference in body mass between early and late pregnancy.")
     else:
         print("No statistically significant difference in body mass between early and late pregnancy.")
 else:
