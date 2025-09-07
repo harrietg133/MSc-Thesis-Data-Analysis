@@ -8,7 +8,7 @@ from scipy.stats import shapiro
 df = pd.read_csv("YOB_Data.csv")
 df = df.dropna(subset=["Mass"])
 
-body_volume = df["Mass"]
+body_mass = df["Mass"]
 
 for group, data in df.groupby("YOB"):
     stat, p = shapiro(data["Mass"].dropna())
@@ -19,14 +19,14 @@ for group, data in df.groupby("YOB"):
 from scipy.stats import ttest_ind
 import numpy as np
 
-preg = df[df["YOB"] == 2017]["Mass"].dropna()
-nonpreg = df[df["YOB"] == 2018]["Mass"].dropna()
+late = df[df["YOB"] == 2017]["Mass"].dropna()
+early = df[df["YOB"] == 2018]["Mass"].dropna()
 
-if len(preg) > 0 and len(nonpreg) > 0:
-    t_stat, p_value = ttest_ind(preg, nonpreg, equal_var=False, alternative='two-sided')
+if len(late) > 0 and len(early) > 0:
+    t_stat, p_value = ttest_ind(late, early, equal_var=False, alternative='two-sided')
     
-    n1, n2 = len(preg), len(nonpreg)
-    s1, s2 = np.var(preg, ddof=1), np.var(nonpreg, ddof=1)
+    n1, n2 = len(late), len(early)
+    s1, s2 = np.var(late, ddof=1), np.var(early, ddof=1)
     
     df_num = (s1/n1 + s2/n2)**2
     df_den = ((s1/n1)**2 / (n1 - 1)) + ((s2/n2)**2 / (n2 - 1))
@@ -41,6 +41,6 @@ if len(preg) > 0 and len(nonpreg) > 0:
     else:
         print("No statistically significant difference in body mass between early and late pregnancy.")
 else:
-    print(f"Cannot perform test: preg group has {len(preg)} samples, nonpreg group has {len(nonpreg)} samples")
+    print(f"Cannot perform test: late group has {len(late)} samples, early group has {len(early)} samples")
     print("Both groups must have at least one sample.")
     print("Unique values in Status column:", df["Status"].unique())
